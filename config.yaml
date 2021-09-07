@@ -1,0 +1,17 @@
+parse_keys: ["File", "Function", "Level", "Line", "Message", "Time"]
+log_levels:
+  debug:
+    key: "DEBUG"
+    color: green
+  info:
+    key: "INFO"
+    color: green
+  warn:
+    key: "WARN"
+    color: yellow
+  error:
+    key: "ERROR"
+    color: red
+  fatal:
+    key: "FATAL"
+    color: brown
