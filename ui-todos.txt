@@ -1,0 +1,37 @@
+Homeworks:
+- Remove App1.js
+- Add simple Header, footer - improve.
+- Move the URL to a constants file - use proper naming conventions.
+- Async (SkillShare, YT)
+- Learn how to hit the API periodically(every 1s - time should come from the constants file as well) - use
+    promise to fix the setTimeout code.
+
+<Discussion> - fix API contract.
+
+- Learn about Linked List.
+- Create a linked list (write tests as well) and use it instead of a list for log lines state.
+- Add a limit to the number of logs displayed (100 - again, from constants).
+
+
+Header
+LogTail                                                             About
+
+t=0s
+{}
+
+t=1s
+{
+    L1
+    L2
+    L3
+}
+
+t=2s
+
+{
+    L1
+    L2
+    L3
+    L4
+    L5
+}
