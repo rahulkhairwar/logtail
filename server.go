@@ -3,18 +3,20 @@ package logtail
 import (
 	"context"
 	"fmt"
+	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"net/http"
 	"sync"
 	"time"
 )
 
+// todo: tests.
 func Serve(ctx context.Context, conf *Config, wg *sync.WaitGroup) {
 	defer wg.Done()
 
 	r := mux.NewRouter()
 
-	r.Use(mux.CORSMethodMiddleware(r), RequestIDMiddleware, ResponseTimeMiddleware)
+	r.Use(handlers.RecoveryHandler(), mux.CORSMethodMiddleware(r), RequestIDMiddleware, ResponseTimeMiddleware)
 	r.HandleFunc("/", HomeHandler)
 	http.Handle("/", r)
 
@@ -58,6 +60,27 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func RequestIDMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		reqID := r.Header.Get(requestIDKey)
+		ctx := r.Context()
+
+		if reqID == "" {
+			var err error
+			reqID, err = getRandomRequestID()
+			if err != nil {
+				logger.Print(ctx, "failed to generate random UUID, err: %v", err)
+
+				return
+			}
+		}
+
+		r = r.WithContext(context.WithValue(ctx, requestIDKey, reqID))
+		next.ServeHTTP(w, r)
+	})
+}
+
+// todo: tests.
 func ResponseTimeMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
@@ -66,25 +89,5 @@ func ResponseTimeMiddleware(next http.Handler) http.Handler {
 		logger.Print(ctx, "incoming request [%v]{%v}", r.Method, r.URL.Path)
 		next.ServeHTTP(w, r)
 		logger.Print(ctx, "request completed in {%v}", startTime.Sub(time.Now()))
-	})
-}
-
-func RequestIDMiddleware(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		reqID := r.Header.Get(requestIDKey)
-		ctx := r.Context()
-
-		if reqID == "" {
-			reqID, err := getRandomRequestID()
-			if err != nil {
-				logger.Print(ctx, "failed to generate random UUID, err: %v", err)
-
-				return
-			}
-
-			r = r.WithContext(context.WithValue(ctx, requestIDKey, reqID))
-		}
-
-		next.ServeHTTP(w, r)
 	})
 }
