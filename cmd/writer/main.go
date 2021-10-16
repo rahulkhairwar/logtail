@@ -21,8 +21,8 @@ func init() {
 }
 
 const (
-	stopCount = 15
-	lifetime  = 5 * time.Second
+	stopCount = 1e3
+	lifetime  = 1 * time.Minute
 )
 
 func main() {
