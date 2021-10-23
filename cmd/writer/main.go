@@ -15,7 +15,7 @@ var (
 	inFile, outFile string
 )
 
-func init() {
+func setupEnv() {
 	inFile = os.Getenv("SAMPLE_LOG_FILE")
 	outFile = os.Getenv("OUTPUT_LOG_FILE")
 }
@@ -26,6 +26,8 @@ const (
 )
 
 func main() {
+	setupEnv()
+
 	ctx := context.Background()
 	conf := tail.Config{
 		MustExist: true,
