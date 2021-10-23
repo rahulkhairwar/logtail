@@ -10,20 +10,29 @@ import (
 	"time"
 )
 
-// todo: tests.
 func Serve(ctx context.Context, conf *Config, wg *sync.WaitGroup) {
 	defer wg.Done()
 
-	r := mux.NewRouter()
+	logsSvc := NewLogsService()
+	// homeCont := newHomeController()
+	logsCont := NewLogsController(logsSvc)
+	router := mux.NewRouter()
 
-	r.Use(handlers.RecoveryHandler(), mux.CORSMethodMiddleware(r), RequestIDMiddleware, ResponseTimeMiddleware)
-	r.HandleFunc("/", HomeHandler)
-	http.Handle("/", r)
+	router.Use(
+		handlers.RecoveryHandler(),
+		mux.CORSMethodMiddleware(router),
+		RequestIDMiddleware,
+		ResponseTimeMiddleware,
+	)
+
+	// homeCont.SetupRoutes(router)
+	logsCont.SetupRoutes(router)
+
+	http.Handle("/", router)
 
 	addr := fmt.Sprintf("127.0.0.1:%v", conf.Port)
-
 	srv := &http.Server{
-		Handler:      r,
+		Handler:      router,
 		Addr:         addr,
 		WriteTimeout: 15 * time.Second,
 		ReadTimeout:  15 * time.Second,
@@ -53,41 +62,11 @@ func Serve(ctx context.Context, conf *Config, wg *sync.WaitGroup) {
 	}
 }
 
-func HomeHandler(w http.ResponseWriter, r *http.Request) {
+func homeHandler(w http.ResponseWriter, r *http.Request) {
 	_, err := w.Write([]byte("Home Handler!!"))
 	if err != nil {
 		logger.Print(r.Context(), "error writing response: %v", err)
 	}
 }
 
-func RequestIDMiddleware(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		reqID := r.Header.Get(requestIDKey)
-		ctx := r.Context()
-
-		if reqID == "" {
-			var err error
-			reqID, err = getRandomRequestID()
-			if err != nil {
-				logger.Print(ctx, "failed to generate random UUID, err: %v", err)
-
-				return
-			}
-		}
-
-		r = r.WithContext(context.WithValue(ctx, requestIDKey, reqID))
-		next.ServeHTTP(w, r)
-	})
-}
-
-// todo: tests.
-func ResponseTimeMiddleware(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		ctx := r.Context()
-		startTime := time.Now()
-
-		logger.Print(ctx, "incoming request [%v]{%v}", r.Method, r.URL.Path)
-		next.ServeHTTP(w, r)
-		logger.Print(ctx, "request completed in {%v}", startTime.Sub(time.Now()))
-	})
-}
+// todo: tests for file.

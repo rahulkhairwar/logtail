@@ -18,8 +18,8 @@ var (
 
 var config logtail.Config
 
-func init() {
-	file = os.Getenv("TAIL_FILE")
+func setup() {
+	file = os.Getenv("FILE_TO_TAIL")
 
 	f, err := os.OpenFile("./config.yaml", os.O_RDONLY, 0755)
 	if err != nil {
@@ -41,6 +41,8 @@ func init() {
 }
 
 func main() {
+	setup()
+
 	conf := tail.Config{
 		MustExist: true,
 		Poll:      true,
@@ -58,6 +60,8 @@ func main() {
 
 	wg.Add(1)
 	defer wg.Wait()
+
+	// start HTTP server in a separate goroutine
 	go logtail.Serve(ctx, &config, &wg)
 
 	for {
