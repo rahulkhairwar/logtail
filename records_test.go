@@ -30,7 +30,9 @@ func Test_newRecords(t *testing.T) {
 	})
 
 	t.Run("tail systemLogFile", func(t *testing.T) {
-		got, err := newRecords("/var/log/system.log")
+		f := openOrCreateFile(_recordsFile)
+		defer deleteFile(f, _recordsFile)
+		got, err := newRecords(_recordsFile)
 
 		assert.NoError(t, err)
 		assert.NotNil(t, got)
