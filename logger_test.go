@@ -87,7 +87,7 @@ func TestLogger_Fatal(t *testing.T) {
 		testName := fmt.Sprintf("FATAL_TEST_%d", i)
 		logFile := fmt.Sprintf("FATAL_%d.log", i)
 
-		f := initTest(logFile)
+		f := openOrCreateFile(logFile)
 
 		logger._log.SetOutput(f)
 
@@ -109,14 +109,14 @@ func TestLogger_Fatal(t *testing.T) {
 		})
 
 		assert.Equal(t, tt.want, readLogs(logFile))
-		terminateTest(f, logFile)
+		deleteFile(f, logFile)
 	}
 
 	log.SetOutput(os.Stderr)
 }
 
-func initTest(logFile string) *os.File {
-	f, err := os.OpenFile(logFile, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0666)
+func openOrCreateFile(file string) *os.File {
+	f, err := os.OpenFile(file, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0666)
 	if err != nil {
 		logger._log.Fatalf("error opening file: %v", err)
 	}
@@ -124,10 +124,10 @@ func initTest(logFile string) *os.File {
 	return f
 }
 
-func terminateTest(f *os.File, logFile string) {
+func deleteFile(f *os.File, file string) {
 	_ = f.Close()
 
-	if err := os.Remove(logFile); err != nil {
+	if err := os.Remove(file); err != nil {
 		panic("failed to delete file : " + err.Error())
 	}
 }

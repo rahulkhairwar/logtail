@@ -2,13 +2,13 @@ package logtail
 
 import (
 	"github.com/google/uuid"
-	"github.com/pkg/errors"
+	"github.com/rotisserie/eris"
 )
 
 func getRandomRequestID() (string, error) {
 	id, err := uuid.NewRandom()
 	if err != nil {
-		return "", errors.Wrap(err, "new random uuid")
+		return "", eris.Wrap(err, "new random uuid")
 	}
 
 	return id.String(), nil

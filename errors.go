@@ -8,4 +8,5 @@ func (e Error) Error() string {
 
 const (
 	ErrNoRecords = Error("no_records")
+	ErrClosed    = Error("closed")
 )

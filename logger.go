@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"os"
 )
 
 var (
@@ -23,11 +24,12 @@ func init() {
 }
 
 func (l *Logger) Print(ctx context.Context, msg string, args ...interface{}) {
-	l._log.Println(prepareMsg(ctx, msg, args...))
+	_ = logger._log.Output(2, prepareMsg(ctx, msg, args...))
 }
 
 func (l *Logger) Fatal(ctx context.Context, msg string, args ...interface{}) {
-	l._log.Fatalln(prepareMsg(ctx, msg, args...))
+	_ = logger._log.Output(2, prepareMsg(ctx, msg, args...))
+	os.Exit(1)
 }
 
 func prepareMsg(ctx context.Context, msg string, args ...interface{}) string {

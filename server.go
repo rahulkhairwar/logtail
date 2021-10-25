@@ -6,15 +6,23 @@ import (
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"net/http"
-	"sync"
 	"time"
 )
 
-func Serve(ctx context.Context, conf *Config, wg *sync.WaitGroup) {
-	defer wg.Done()
+func Serve(ctx context.Context, conf *Config) {
+	logsSvc, err := NewLogsService(conf.FileToTail)
+	if err != nil {
+		logger.Fatal(ctx, "can't set up new logs service, err: %+v", err)
+	}
 
-	logsSvc := NewLogsService()
-	// homeCont := newHomeController()
+	defer func(logsSvc LogsService, ctx context.Context) {
+		if err = logsSvc.Shutdown(ctx); err != nil {
+			logger.Fatal(ctx, "failed to shutdown logs service, err: %+v", err)
+		}
+	}(logsSvc, ctx)
+
+	logger.Print(ctx, "new logs service set up successfully")
+
 	logsCont := NewLogsController(logsSvc)
 	router := mux.NewRouter()
 
@@ -25,7 +33,6 @@ func Serve(ctx context.Context, conf *Config, wg *sync.WaitGroup) {
 		ResponseTimeMiddleware,
 	)
 
-	// homeCont.SetupRoutes(router)
 	logsCont.SetupRoutes(router)
 
 	http.Handle("/", router)
@@ -61,12 +68,3 @@ func Serve(ctx context.Context, conf *Config, wg *sync.WaitGroup) {
 		}
 	}
 }
-
-func homeHandler(w http.ResponseWriter, r *http.Request) {
-	_, err := w.Write([]byte("Home Handler!!"))
-	if err != nil {
-		logger.Print(r.Context(), "error writing response: %v", err)
-	}
-}
-
-// todo: tests for file.

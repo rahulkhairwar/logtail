@@ -1,6 +1,9 @@
 package logtail
 
-import "context"
+import (
+	"context"
+	"github.com/rotisserie/eris"
+)
 
 type LogsService interface {
 	GetLogs(context.Context, int) ([]string, error)
@@ -8,7 +11,7 @@ type LogsService interface {
 }
 
 type logsService struct {
-	records records
+	records *records
 }
 
 // GetLogs returns the new logs available. If pageSize is provided, pageSize logs are returned, else defaultPageSize
@@ -48,10 +51,13 @@ func (l logsService) Shutdown(context.Context) error {
 
 // NewLogsService returns an instance of LogsService. Should ideally call this with deferred LogsService.Shutdown to
 // properly close resources.
-func NewLogsService() LogsService {
-	return &logsService{
-		records: records{
-			ch: make(chan string),
-		},
+func NewLogsService(file string) (LogsService, error) {
+	r, err := newRecords(file)
+	if err != nil {
+		return nil, eris.Wrapf(err, "create new 'records'")
 	}
+
+	return &logsService{
+		records: r,
+	}, nil
 }
