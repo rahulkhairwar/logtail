@@ -18,23 +18,6 @@ var _testHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request)
 	logger.Print(r.Context(), "[_testHandler]")
 })
 
-func TestHomeHandler(t *testing.T) {
-	type args struct {
-		w http.ResponseWriter
-		r *http.Request
-	}
-	tests := []struct {
-		name string
-		args args
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-		})
-	}
-}
-
 func TestRequestIDMiddleware(t *testing.T) {
 	log.SetFlags(0)
 	want := "[request_id = asdf-ghjk] [_testHandler]\n"
