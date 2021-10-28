@@ -1,6 +1,7 @@
 package logtail
 
-type config struct {
+type Config struct {
+	Port      int
 	ParseKeys []string         `yaml:"parse_keys"`
 	LogLevels map[string]level `yaml:"log_levels"`
 }

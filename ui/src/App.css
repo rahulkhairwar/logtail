@@ -1,0 +1,27 @@
+.App1 {
+  text-align: center;
+}
+
+
+.header {
+  background-color: #282c34;
+  min-height: 30vh;
+  text-align:center;
+  
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.Logline {
+  text-align: center;
+  margin: 40px;
+  font-size: 30px;
+}
+.input, .button {
+  font-size: 18px;
+  margin-bottom: 50px;
+  
+}
+.footer {
+  text-align:center;
+}
