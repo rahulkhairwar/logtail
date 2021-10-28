@@ -13,7 +13,7 @@ class Header extends React.Component  {
         return (
             <div className="header">
                 <hr/>
-                <h1>Logtail                     About</h1>
+                <h1>Logtail Corporation</h1>
             </div>
             
         )

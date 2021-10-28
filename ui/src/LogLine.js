@@ -1,6 +1,6 @@
 import React, {Component} from "react";
 import {url1} from "./consts.js";
-import './hue.css';
+
 
 
 // LogLine
@@ -25,8 +25,8 @@ class LogLine extends Component {
 
 
 
-            setTimeout(
-                () => fetch(this.getUrl(i))
+           
+                fetch(this.getUrl(i))
                 .then(response => response.json())
                 .then(data => {
                     data['number'] = i + 1;
@@ -35,22 +35,39 @@ class LogLine extends Component {
                         character: [...prevState.character, data]
                     }))
                 })
-            , 2000)
+            
             
         }
         
+        
         console.log(this.state.character)
     }
+   
+    listItems = () => {
+        const characters =  this.state.character
+        let timer = 0;
+        for (let i = 0; i < characters.length; i++) {
+          setTimeout(() => document.getElementById('data').innerHTML = characters[i].name, timer);
+          timer = timer + 1000;
+        }
+      }
     
     render() {
         // this.state.loading ? "Loading the page, please wait" :
-        const characters =  this.state.character
+        
         // const listItems = characters.map((d) => <li key={d.name}>{d.name}</li>);
-        const listItems = characters.map((d) => <p key={d.name} className='hue'>{d.number} = {JSON.stringify(d, null, 2)}</p>);
+                
+        this.listItems()
+        
         
         return (
-            <div>
-               {listItems}
+            <div className="Logline">
+                <div >
+                    <input type="text" placeholder="Search for the data here" className="input"></input>
+                    <button className="button">Search</button>
+                </div>
+                
+                <div id="data" ></div>
             </div>
         )
     }
