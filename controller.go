@@ -17,8 +17,6 @@ type logsController struct {
 	svc LogsService
 }
 
-// set up route -> handler mappings here.
-
 func (l *logsController) SetupRoutes(r *mux.Router) {
 	r.Handle("/logs", genericHandler(l.Get)).Name("logsHandler")
 	r.Handle("/logs", genericHandler(l.Get)).Name("logsHandler").Queries(pageSizeKey, "{pageSize:[0-9]+}").Methods(http.MethodGet)
@@ -36,14 +34,18 @@ func (g genericHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	res, err := json.Marshal(data)
 	if err != nil {
-		errMsg := fmt.Sprintf("Error parsing response body: %v", err.Error())
+		errMsg := fmt.Sprintf("failed to parse response body: %+v", err)
 		http.Error(w, errMsg, status)
 
 		return
 	}
 
-	// todo: handle err.
-	w.Write(res)
+	ctx := r.Context()
+
+	if _, err = w.Write(res); err != nil {
+		logger.Print(ctx, "failed to write ")
+		return
+	}
 }
 
 func (l *logsController) Get(r *http.Request) (interface{}, error) {
