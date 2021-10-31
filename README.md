@@ -1,3 +1,6 @@
+[![Workflow for Go Standard Action](https://github.com/codecov/go-standard/actions/workflows/go-standard.yml/badge.svg)](https://github.com/codecov/go-standard/actions/workflows/go-standard.yml)
+[![codecov](https://codecov.io/gh/codecov/example-go/branch/master/graph/badge.svg)](https://codecov.io/gh/codecov/example-go) (https://codecov.io/gh/codecov/go-Standard)
+
 # logtail
 Tail logs from a file
 
