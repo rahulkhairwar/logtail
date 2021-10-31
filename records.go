@@ -30,6 +30,10 @@ func newRecords(file string) (*records, error) {
 func (r *records) Next() (string, error) {
 	select {
 	case s := <-r.t.Lines:
+		if s == nil {
+			return "", ErrClosed
+		}
+
 		return s.Text, nil
 	case <-r.t.Dying():
 		return "", ErrClosed
