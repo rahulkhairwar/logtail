@@ -5,17 +5,19 @@ import (
 	"fmt"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
+	"github.com/rahulkhairwar/logtail/internal"
+	"github.com/rahulkhairwar/logtail/logger"
 	"net/http"
 	"time"
 )
 
-func Serve(ctx context.Context, conf *Config) {
-	logsSvc, err := NewLogsService(conf.FileToTail)
+func Serve(ctx context.Context, conf *internal.Config) {
+	logsSvc, err := internal.NewLogsService(conf.FileToTail)
 	if err != nil {
 		logger.Fatal(ctx, "can't set up new logs service, err: %+v", err)
 	}
 
-	defer func(logsSvc LogsService, ctx context.Context) {
+	defer func(logsSvc internal.LogsService, ctx context.Context) {
 		if err = logsSvc.Shutdown(ctx); err != nil {
 			logger.Fatal(ctx, "failed to shutdown logs service, err: %+v", err)
 		}
@@ -23,14 +25,14 @@ func Serve(ctx context.Context, conf *Config) {
 
 	logger.Print(ctx, "new logs service set up successfully")
 
-	logsCont := NewLogsController(logsSvc)
+	logsCont := internal.NewLogsController(logsSvc)
 	router := mux.NewRouter()
 
 	router.Use(
 		handlers.RecoveryHandler(),
 		mux.CORSMethodMiddleware(router),
-		RequestIDMiddleware,
-		ResponseTimeMiddleware,
+		internal.RequestIDMiddleware,
+		internal.ResponseTimeMiddleware,
 	)
 
 	logsCont.SetupRoutes(router)

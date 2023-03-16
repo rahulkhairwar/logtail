@@ -1,4 +1,4 @@
-package logtail
+package internal
 
 type logLine struct {
 }

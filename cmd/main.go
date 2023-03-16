@@ -2,15 +2,18 @@ package main
 
 import (
 	"context"
-	_ "github.com/joho/godotenv/autoload"
-	"github.com/rahulkhairwar/logtail"
-	"gopkg.in/yaml.v3"
 	"io/ioutil"
 	"log"
 	"os"
+
+	"github.com/rahulkhairwar/logtail"
+	"github.com/rahulkhairwar/logtail/internal"
+
+	_ "github.com/joho/godotenv/autoload"
+	"gopkg.in/yaml.v3"
 )
 
-var config logtail.Config
+var config internal.Config
 
 func setup() {
 	f, err := os.OpenFile("./config.yaml", os.O_RDONLY, 0755)

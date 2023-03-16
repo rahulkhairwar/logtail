@@ -2,7 +2,7 @@ package logtail
 
 import (
 	"context"
-	"net/http"
+	"github.com/rahulkhairwar/logtail/internal"
 	"sync"
 	"testing"
 )
@@ -10,7 +10,7 @@ import (
 func TestServe(t *testing.T) {
 	type args struct {
 		ctx  context.Context
-		conf *Config
+		conf *internal.Config
 		wg   *sync.WaitGroup
 	}
 	tests := []struct {
@@ -23,12 +23,4 @@ func TestServe(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 		})
 	}
-}
-
-func newRequest(method, url string) *http.Request {
-	req, err := http.NewRequest(method, url, nil)
-	if err != nil {
-		panic(err)
-	}
-	return req
 }
