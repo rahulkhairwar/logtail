@@ -1,7 +1,8 @@
-package logtail
+package internal
 
 import (
 	"bytes"
+	"github.com/rahulkhairwar/logtail/logger"
 	"github.com/stretchr/testify/assert"
 	"log"
 	"os"
@@ -69,7 +70,7 @@ func TestHandleLogLine(t *testing.T) {
 	}
 
 	log.SetOutput(os.Stderr)
-	log.SetFlags(defaultFlags)
+	log.SetFlags(logger.DefaultFlags)
 }
 
 func Test_contains(t *testing.T) {
@@ -191,7 +192,7 @@ func Test_printSelectedKeys(t *testing.T) {
 	}
 
 	log.SetOutput(os.Stderr)
-	log.SetFlags(defaultFlags)
+	log.SetFlags(logger.DefaultFlags)
 }
 
 func Test_stringToJSON(t *testing.T) {

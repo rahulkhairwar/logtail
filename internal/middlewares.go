@@ -1,14 +1,16 @@
-package logtail
+package internal
 
 import (
 	"context"
+	"github.com/rahulkhairwar/logtail/constants"
+	"github.com/rahulkhairwar/logtail/logger"
 	"net/http"
 	"time"
 )
 
 func RequestIDMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		reqID := r.Header.Get(requestIDKey)
+		reqID := r.Header.Get(constants.RequestIDKey)
 		ctx := r.Context()
 
 		if reqID == "" {
@@ -21,7 +23,7 @@ func RequestIDMiddleware(next http.Handler) http.Handler {
 			}
 		}
 
-		r = r.WithContext(context.WithValue(ctx, requestIDKey, reqID))
+		r = r.WithContext(context.WithValue(ctx, constants.RequestIDKey, reqID))
 		next.ServeHTTP(w, r)
 	})
 }

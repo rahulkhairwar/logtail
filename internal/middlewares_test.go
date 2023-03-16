@@ -1,7 +1,9 @@
-package logtail
+package internal
 
 import (
 	"bytes"
+	"github.com/rahulkhairwar/logtail/constants"
+	"github.com/rahulkhairwar/logtail/logger"
 	"github.com/stretchr/testify/assert"
 	"log"
 	"net/http"
@@ -17,6 +19,8 @@ var _testHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request)
 })
 
 func TestRequestIDMiddleware(t *testing.T) {
+	const _reqID = "asdf-ghjk"
+
 	log.SetFlags(0)
 	want := "[request_id = asdf-ghjk] [_testHandler]\n"
 
@@ -27,7 +31,7 @@ func TestRequestIDMiddleware(t *testing.T) {
 		handler := RequestIDMiddleware(_testHandler)
 		req := newRequest(http.MethodGet, "/temp")
 
-		req.Header.Set(requestIDKey, _reqID)
+		req.Header.Set(constants.RequestIDKey, _reqID)
 		handler.ServeHTTP(httptest.NewRecorder(), req)
 		assert.Equal(t, want, b.String())
 	})
@@ -44,7 +48,7 @@ func TestRequestIDMiddleware(t *testing.T) {
 	})
 
 	log.SetOutput(os.Stderr)
-	log.SetFlags(defaultFlags)
+	log.SetFlags(logger.DefaultFlags)
 }
 
 func TestResponseTimeMiddleware(t *testing.T) {
@@ -67,4 +71,12 @@ func TestResponseTimeMiddleware(t *testing.T) {
 		assert.Positive(t, secondLog)
 		assert.True(t, firstLog < secondLog)
 	})
+}
+
+func newRequest(method, url string) *http.Request {
+	req, err := http.NewRequest(method, url, nil)
+	if err != nil {
+		panic(err)
+	}
+	return req
 }

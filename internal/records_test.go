@@ -1,6 +1,7 @@
-package logtail
+package internal
 
 import (
+	"github.com/rahulkhairwar/logtail/logger"
 	"github.com/stretchr/testify/assert"
 	"os"
 	"strings"
@@ -30,8 +31,8 @@ func Test_newRecords(t *testing.T) {
 	})
 
 	t.Run("tail systemLogFile", func(t *testing.T) {
-		f := openOrCreateFile(_recordsFile)
-		defer deleteFile(f, _recordsFile)
+		f := logger.openOrCreateFile(_recordsFile)
+		defer logger.deleteFile(f, _recordsFile)
 		got, err := newRecords(_recordsFile)
 
 		assert.NoError(t, err)
@@ -40,8 +41,8 @@ func Test_newRecords(t *testing.T) {
 }
 
 func Test_records_Next(t *testing.T) {
-	f := openOrCreateFile(_recordsFile)
-	defer deleteFile(f, _recordsFile)
+	f := logger.openOrCreateFile(_recordsFile)
+	defer logger.deleteFile(f, _recordsFile)
 
 	assert.NoError(t, writeTempDataToFile(f))
 
@@ -112,8 +113,8 @@ func Test_records_Next(t *testing.T) {
 }
 
 func Test_records_Close(t *testing.T) {
-	f := openOrCreateFile(_recordsFile)
-	defer deleteFile(f, _recordsFile)
+	f := logger.openOrCreateFile(_recordsFile)
+	defer logger.deleteFile(f, _recordsFile)
 
 	assert.NoError(t, writeTempDataToFile(f))
 

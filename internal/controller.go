@@ -1,12 +1,14 @@
-package logtail
+package internal
 
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/gorilla/mux"
-	"github.com/rotisserie/eris"
 	"net/http"
 	"strconv"
+
+	"github.com/gorilla/mux"
+	"github.com/rahulkhairwar/logtail/logger"
+	"github.com/rotisserie/eris"
 )
 
 const (
@@ -43,7 +45,7 @@ func (g genericHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	if _, err = w.Write(res); err != nil {
-		logger.Print(ctx, "failed to write ")
+		logger.Print(ctx, "failed to write response to writer")
 		return
 	}
 }

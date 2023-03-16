@@ -1,7 +1,10 @@
-package logtail
+package internal
 
 import (
 	"context"
+
+	"github.com/rahulkhairwar/logtail/constants"
+	"github.com/rahulkhairwar/logtail/logger"
 	"github.com/rotisserie/eris"
 )
 
@@ -18,7 +21,7 @@ type logsService struct {
 // logs are returned. If the total available logs are less than the determined pageSize, all those logs are returned.
 func (l logsService) GetLogs(ctx context.Context, pageSize int) ([]string, error) {
 	if pageSize == 0 {
-		pageSize = defaultPageSize
+		pageSize = constants.DefaultPageSize
 	}
 
 	logger.Print(ctx, "get logs, pageSize {%v}", pageSize)

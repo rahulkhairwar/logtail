@@ -1,4 +1,4 @@
-package logtail
+package internal
 
 import (
 	"github.com/nxadm/tail"

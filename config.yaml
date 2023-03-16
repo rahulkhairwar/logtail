@@ -1,4 +1,4 @@
-port: 9000
+port: 9191
 file_to_tail: "/Users/rahulkhairwar/Documents/personal_projects/logtail/logs/log1.log"
 parse_keys: ["File", "Function", "Level", "Line", "Message", "Time"]
 log_levels:

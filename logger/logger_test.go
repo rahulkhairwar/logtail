@@ -1,9 +1,10 @@
-package logtail
+package logger
 
 import (
 	"bytes"
 	"context"
 	"fmt"
+	"github.com/rahulkhairwar/logtail/constants"
 	"github.com/stretchr/testify/assert"
 	"io/ioutil"
 	"log"
@@ -16,7 +17,7 @@ import (
 var (
 	_emptyCtx = context.Background()
 	_reqID    = "asdf-ghjk"
-	_reqIDCtx = context.WithValue(_emptyCtx, requestIDKey, _reqID)
+	_reqIDCtx = context.WithValue(_emptyCtx, constants.RequestIDKey, _reqID)
 	_msg      = "This is a sample message."
 	_argsMsg  = _msg + " {%v}."
 )
@@ -71,7 +72,7 @@ func TestLogger_Print(t *testing.T) {
 			b := bytes.Buffer{}
 
 			log.SetOutput(&b)
-			logger.Print(tt.args.ctx, tt.args.msg, tt.args.args...)
+			Print(tt.args.ctx, tt.args.msg, tt.args.args...)
 			assert.Equal(t, tt.want, b.String())
 		})
 	}
@@ -89,11 +90,11 @@ func TestLogger_Fatal(t *testing.T) {
 
 		f := openOrCreateFile(logFile)
 
-		logger._log.SetOutput(f)
+		logger.l.SetOutput(f)
 
 		t.Run(tt.name, func(t *testing.T) {
 			if os.Getenv(testName) == "1" {
-				logger.Fatal(tt.args.ctx, tt.args.msg, tt.args.args...)
+				Fatal(tt.args.ctx, tt.args.msg, tt.args.args...)
 				return
 			}
 
@@ -118,7 +119,7 @@ func TestLogger_Fatal(t *testing.T) {
 func openOrCreateFile(file string) *os.File {
 	f, err := os.OpenFile(file, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0666)
 	if err != nil {
-		logger._log.Fatalf("error opening file: %v", err)
+		logger.l.Fatalf("error opening file: %v", err)
 	}
 
 	return f
