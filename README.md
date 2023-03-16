@@ -8,6 +8,8 @@ Tail logs from a file
 #### Frontend:
 <ol>
     <li>Store user's config in cookies.</li>
+    - Use a buffer size of logs, so that only a limited number of logs are in memory.
+    - Provide an API to load logs on scrolling - how to store past logs? DB vs file copy? Not ideal to create and write to a file being a simple UI tool. DB is a bigger overhead - user needs to have the DB (mongo useful here) running.
 </ol>
 
 #### Backend:
