@@ -1,6 +1,6 @@
 module github.com/rahulkhairwar/logtail
 
-go 1.17
+go 1.24
 
 require (
 	github.com/google/uuid v1.3.0

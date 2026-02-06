@@ -20,8 +20,10 @@ type logsController struct {
 }
 
 func (l *logsController) SetupRoutes(r *mux.Router) {
+	r.HandleFunc("/", l.ServeUI).Methods(http.MethodGet)
 	r.Handle("/logs", genericHandler(l.Get)).Name("logsHandler")
 	r.Handle("/logs", genericHandler(l.Get)).Name("logsHandler").Queries(pageSizeKey, "{pageSize:[0-9]+}").Methods(http.MethodGet)
+	r.HandleFunc("/logs/stream", l.Stream).Methods(http.MethodGet)
 }
 
 func (g genericHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -65,6 +67,39 @@ func (l *logsController) Get(r *http.Request) (interface{}, error) {
 	}
 
 	return res, nil
+}
+
+func (l *logsController) Stream(w http.ResponseWriter, r *http.Request) {
+	flusher, ok := w.(http.Flusher)
+	if !ok {
+		http.Error(w, "streaming not supported", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "text/event-stream")
+	w.Header().Set("Cache-Control", "no-cache")
+	w.Header().Set("Connection", "keep-alive")
+
+	ctx := r.Context()
+
+	err := l.svc.StreamLogs(ctx, func(line string) error {
+		_, writeErr := fmt.Fprintf(w, "data: %s\n\n", line)
+		if writeErr != nil {
+			return writeErr
+		}
+
+		flusher.Flush()
+		return nil
+	})
+
+	if err != nil {
+		logger.Print(ctx, "stream error: %v", err)
+	}
+}
+
+func (l *logsController) ServeUI(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	_, _ = w.Write([]byte(indexHTML))
 }
 
 func NewLogsController(svc LogsService) *logsController {

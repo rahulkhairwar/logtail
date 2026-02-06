@@ -1,11 +1,11 @@
 package internal
 
 import (
-	"github.com/rahulkhairwar/logtail/logger"
-	"github.com/stretchr/testify/assert"
 	"os"
 	"strings"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 const (
@@ -31,8 +31,8 @@ func Test_newRecords(t *testing.T) {
 	})
 
 	t.Run("tail systemLogFile", func(t *testing.T) {
-		f := logger.openOrCreateFile(_recordsFile)
-		defer logger.deleteFile(f, _recordsFile)
+		f := openOrCreateTestFile(_recordsFile)
+		defer deleteTestFile(f, _recordsFile)
 		got, err := newRecords(_recordsFile)
 
 		assert.NoError(t, err)
@@ -41,8 +41,8 @@ func Test_newRecords(t *testing.T) {
 }
 
 func Test_records_Next(t *testing.T) {
-	f := logger.openOrCreateFile(_recordsFile)
-	defer logger.deleteFile(f, _recordsFile)
+	f := openOrCreateTestFile(_recordsFile)
+	defer deleteTestFile(f, _recordsFile)
 
 	assert.NoError(t, writeTempDataToFile(f))
 
@@ -113,8 +113,8 @@ func Test_records_Next(t *testing.T) {
 }
 
 func Test_records_Close(t *testing.T) {
-	f := logger.openOrCreateFile(_recordsFile)
-	defer logger.deleteFile(f, _recordsFile)
+	f := openOrCreateTestFile(_recordsFile)
+	defer deleteTestFile(f, _recordsFile)
 
 	assert.NoError(t, writeTempDataToFile(f))
 
@@ -124,6 +124,23 @@ func Test_records_Close(t *testing.T) {
 
 		assert.NoError(t, r.Close())
 	})
+}
+
+func openOrCreateTestFile(file string) *os.File {
+	f, err := os.OpenFile(file, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0666)
+	if err != nil {
+		panic("error opening file: " + err.Error())
+	}
+
+	return f
+}
+
+func deleteTestFile(f *os.File, file string) {
+	_ = f.Close()
+
+	if err := os.Remove(file); err != nil {
+		panic("failed to delete file: " + err.Error())
+	}
 }
 
 func writeTempDataToFile(f *os.File) error {
