@@ -1,9 +1,11 @@
 package internal
 
 import (
+	"context"
+	"time"
+
 	"github.com/nxadm/tail"
 	"github.com/rotisserie/eris"
-	"time"
 )
 
 type records struct {
@@ -28,6 +30,9 @@ func newRecords(file string) (*records, error) {
 }
 
 func (r *records) Next() (string, error) {
+	timer := time.NewTimer(10 * time.Millisecond)
+	defer timer.Stop()
+
 	select {
 	case s := <-r.t.Lines:
 		if s == nil {
@@ -37,8 +42,23 @@ func (r *records) Next() (string, error) {
 		return s.Text, nil
 	case <-r.t.Dying():
 		return "", ErrClosed
-	case <-time.After(10 * time.Millisecond):
+	case <-timer.C:
 		return "", ErrNoRecords
+	}
+}
+
+func (r *records) NextBlocking(ctx context.Context) (string, error) {
+	select {
+	case s := <-r.t.Lines:
+		if s == nil {
+			return "", ErrClosed
+		}
+
+		return s.Text, nil
+	case <-r.t.Dying():
+		return "", ErrClosed
+	case <-ctx.Done():
+		return "", ctx.Err()
 	}
 }
 
